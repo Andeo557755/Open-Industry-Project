@@ -33,6 +33,14 @@ extends ResizableNode3D
 ## Maximum size for randomly sized boxes (X, Y, Z dimensions).
 @export var random_size_max: Vector3 = Vector3(0.8, 0.5, 0.5)
 
+@export_subgroup("Random Rotation")
+## Enable random rotation for spawned boxes within min/max range.
+@export var random_rotation: bool = false
+## Minimum angle of rotation about local y axis (yaw) for randomly rotated boxes, in degrees
+@export_custom(PROPERTY_HINT_NONE, "suffix:\u00B0") var random_rotation_min: float = 0.0
+## Maximum angle of rotation about local y axis (yaw) for randomly rotated boxes, in degrees
+@export_custom(PROPERTY_HINT_NONE, "suffix:\u00B0") var random_rotation_max: float = 360.0
+
 @export_subgroup("Random Mass")
 ## Enable random mass for spawned boxes within min/max range.
 @export var random_mass: bool = false
@@ -131,12 +139,17 @@ func _spawn_box() -> void:
 	else:
 		box.size = size
 
+	if random_rotation:
+		var y := randf_range(random_rotation_min, random_rotation_max)
+		box.rotation_degrees = Vector3(0.0, y, 0.0)
+	else:
+		box.rotation = rotation
+
 	if random_mass:
 		box.mass = randf_range(random_mass_min, random_mass_max)
 	else:
 		box.mass = mass
 
-	box.rotation = rotation
 	box.position = position
 	box.initial_linear_velocity = initial_linear_velocity
 	box.color = box_color
